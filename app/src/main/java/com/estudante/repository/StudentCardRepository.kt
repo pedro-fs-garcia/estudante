@@ -21,7 +21,8 @@ class StudentCardRepository {
             studentId = studentCard.studentId,
             studentCourse = studentCard.studentCourse,
             studentCicle = studentCard.studentCicle,
-            year = studentCard.year
+            year = studentCard.year,
+            id= studentCard.studentId
         )
 
         CoroutineScope(Dispatchers.IO).launch {

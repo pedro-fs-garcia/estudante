@@ -66,6 +66,7 @@ class CreateNewScreen {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentCardEditor(studentCard: StudentCard, navController:NavController, modifier: Modifier = Modifier){
     var primaryLogoUri by remember { mutableStateOf<Uri?>(null) }
@@ -296,7 +297,7 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, mod
                     studentCard.year = yearField
                     val studentCardRepository = StudentCardRepository()
                     studentCardRepository.saveStudentCard(studentCard, context)
-                    navController.navigate("studentCard/" + studentCard.studentId)
+                    navController.navigate("studentCard/" + studentCard.studentId.toString())
                 },
             ) {
                 Icon(

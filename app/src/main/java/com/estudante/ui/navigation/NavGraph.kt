@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.estudante.models.StudentCard
 import com.estudante.repository.StudentCardRepository
 import com.estudante.ui.screens.CreateNewScreen
-import com.estudante.ui.screens.FatecCardScreen
+//import com.estudante.ui.screens.FatecCardScreen
 import com.estudante.ui.screens.HomeScreen
 import com.estudante.ui.screens.StudentCardScreen
 
@@ -23,14 +23,14 @@ class NavGraph {
         val context = LocalContext.current
         NavHost(navController = navController, startDestination = "home"){
             composable("home") {
-                HomeScreen().BuildScreen(navController = navController)
+                HomeScreen().BuildScreen(navController = navController, context)
             }
             composable(
                 route = "studentCard/{studentId}",
                 arguments = listOf(navArgument("studentId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val context = LocalContext.current
-                val cardId = backStackEntry.arguments?.getLong("studentId")
+                val cardId = backStackEntry.arguments?.getLong("studentId") ?:0L
                 val studentCard = remember { StudentCard() } // Instância temporária para armazenar os dados
                 val studentCardRepository = StudentCardRepository()
 
@@ -55,7 +55,7 @@ class NavGraph {
                 StudentCardScreen().BuildScreen(navController = navController, studentCard = studentCard)
             }
             composable("fatec"){
-                FatecCardScreen().BuildScreen(navController = navController)
+                //FatecCardScreen().BuildScreen(navController = navController)
             }
             composable("create_new"){
                 CreateNewScreen().BuildScreen(navController = navController)
