@@ -18,7 +18,7 @@ class StudentCardRepository {
             secondaryLogoUri = studentCard.secondaryLogo?.toString(),
             profileImageUri = studentCard.profileImage?.toString(),
             studentName = studentCard.studentName,
-            studentId = studentCard.studentId.toString(),
+            studentId = studentCard.studentId,
             studentCourse = studentCard.studentCourse,
             studentCicle = studentCard.studentCicle,
             year = studentCard.year
@@ -39,7 +39,7 @@ class StudentCardRepository {
                 secondaryLogo = it.secondaryLogoUri?.let { uri -> Uri.parse(uri) }
                 profileImage = it.profileImageUri?.let { uri -> Uri.parse(uri) }
                 studentName = it.studentName
-                studentId = it.studentId.toLong()
+                studentId = it.studentId
                 studentCourse = it.studentCourse
                 studentCicle = it.studentCicle
                 year = it.year

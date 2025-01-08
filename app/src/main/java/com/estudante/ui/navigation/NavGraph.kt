@@ -52,7 +52,7 @@ class NavGraph {
                     }
                 }
 
-                StudentCardScreen(studentCard).BuildScreen(navController = navController)
+                StudentCardScreen().BuildScreen(navController = navController, studentCard = studentCard)
             }
             composable("fatec"){
                 FatecCardScreen().BuildScreen(navController = navController)

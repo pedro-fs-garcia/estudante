@@ -9,7 +9,7 @@ data class StudentCardEntity(
     val secondaryLogoUri: String?,
     val profileImageUri: String?,
     val studentName: String,
-    val studentId: String,
+    val studentId: Long,
     val studentCourse: String,
     val studentCicle: String,
     val year: String
