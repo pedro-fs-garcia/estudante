@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.estudante.R
 import com.estudante.models.StudentCard
 import java.io.File
@@ -56,6 +58,7 @@ class StudentCardScreen () {
             modifier = modifier
                 .padding(16.dp)
                 .fillMaxSize()
+                .background(color = Color.White)
 
         ) {
             Row(
@@ -65,12 +68,16 @@ class StudentCardScreen () {
                     .fillMaxWidth()
                     .padding(4.dp)
             ){
+
+                val painter = rememberAsyncImagePainter(studentCard.primaryLogo?.let { File(it) })
                 Image(
-                    painter = painterResource(R.drawable.logo_fatec_ajustado),
-                    contentDescription = "school logo",
+                    painter = painter,
+                    contentDescription = "primary logo",
                     modifier = modifier
                         .height(128.dp)
+                        .background(color = Color.White)
                 )
+
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -79,7 +86,24 @@ class StudentCardScreen () {
                     .fillMaxWidth()
                     .padding(4.dp)
             ){
-                ProfilePictureSelection()
+                //ProfilePictureSelection()
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                ) {
+                    AsyncImage(
+                        model = studentCard.profileImage,
+                        contentDescription = "profile picture",
+                        modifier = modifier
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
             Card (
                 shape = RoundedCornerShape(5.dp),
@@ -153,12 +177,11 @@ class StudentCardScreen () {
                 horizontalArrangement = Arrangement.Center,
                 modifier = modifier.fillMaxWidth()
             ){
-                Image(
-                    painter = painterResource(R.drawable.cps_ajustado),
-                    contentDescription = "profile picture",
+                AsyncImage(
+                    model = studentCard.secondaryLogo ?: R.drawable.ic_launcher_background,
+                    contentDescription = "secondary logo",
                     modifier = modifier
                         .height(75.dp)
-
                 )
             }
         }

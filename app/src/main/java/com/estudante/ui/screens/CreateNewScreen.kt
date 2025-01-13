@@ -2,6 +2,9 @@
 
 package com.estudante.ui.screens
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,13 +48,16 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.estudante.models.StudentCard
 import com.estudante.repository.StudentCardRepository
+import java.io.File
+import java.io.FileOutputStream
 
 class CreateNewScreen {
     var newStudentCard = StudentCard()
 
     @Composable
-    fun BuildScreen(navController: NavController, modifier: Modifier = Modifier){
+    fun BuildScreen(navController: NavController, context:Context, modifier: Modifier = Modifier){
         val scrollState = rememberScrollState()
+        //val context = LocalContext.current
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
@@ -60,7 +66,7 @@ class CreateNewScreen {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ){
-            StudentCardEditor(studentCard = newStudentCard, navController = navController)
+            StudentCardEditor(studentCard = newStudentCard, navController = navController, context = context)
         }
     }
 }
@@ -68,33 +74,40 @@ class CreateNewScreen {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudentCardEditor(studentCard: StudentCard, navController:NavController, modifier: Modifier = Modifier){
-    var primaryLogoUri by remember { mutableStateOf<Uri?>(null) }
-    var secondaryLogoUri by remember { mutableStateOf<Uri?>(null) }
-    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
+fun StudentCardEditor(studentCard: StudentCard, navController:NavController, context: Context, modifier: Modifier = Modifier){
+
+    var primaryLogoUri by remember { mutableStateOf<String?>(null) }
+    var secondaryLogoUri by remember { mutableStateOf<String?>(null) }
+    var profileImageUri by remember { mutableStateOf<String?>(null) }
     var studentNameField by remember { mutableStateOf("")}
     var studentIdField by remember { mutableStateOf("")}
     var studentCourseField by remember { mutableStateOf("")}
     var studentCicleField by remember { mutableStateOf("")}
     var yearField by remember { mutableStateOf("")}
-    val context = LocalContext.current
+
 
     val primaryLogoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        primaryLogoUri = uri
+        uri?.let {
+            primaryLogoUri = saveImageToInternalStorage(context, it)
+        }
     }
 
     val secondaryLogoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        secondaryLogoUri = uri
+        uri?.let {
+            secondaryLogoUri = saveImageToInternalStorage(context, it)
+        }
     }
 
     val profileImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        profileImageUri = uri
+        uri?.let {
+            profileImageUri = saveImageToInternalStorage(context, it)
+        }
     }
 
 
@@ -232,7 +245,7 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, mod
         Column(
 
         ){
-            Row(){
+            Row {
                 Button(onClick = { primaryLogoLauncher.launch("image/*") }) {
                     Text(text = "Logo primário")
                 }
@@ -247,7 +260,7 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, mod
                 )
             }
 
-            Row(){
+            Row {
                 Button(onClick = { secondaryLogoLauncher.launch("image/*") }) {
                     Text(text = "Logo secundário")
                 }
@@ -262,7 +275,7 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, mod
                 )
             }
 
-            Row(){
+            Row {
                 Button(onClick = { profileImageLauncher.launch("image/*") }) {
                     Text(text = "Imagem de perfil")
                 }
@@ -292,11 +305,11 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, mod
                     studentCard.profileImage = profileImageUri
                     studentCard.studentName = studentNameField
                     studentCard.studentCourse = studentCourseField
-                    studentCard.studentId = studentIdField.toLong()
+                    studentCard.studentId = studentIdField
                     studentCard.studentCicle = studentCicleField
                     studentCard.year = yearField
-                    val studentCardRepository = StudentCardRepository()
-                    studentCardRepository.saveStudentCard(studentCard, context)
+                    val studentCardRepository = StudentCardRepository(context)
+                    studentCardRepository.insertStudentCard(studentCard)
                     navController.navigate("studentCard/" + studentCard.studentId.toString())
                 },
             ) {
@@ -309,5 +322,25 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, mod
             }
         }
 
+    }
+}
+
+fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+    return try {
+        val bitmap = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            BitmapFactory.decodeStream(inputStream)
+        } ?: throw IllegalArgumentException("Cannot decode bitmap from URI")
+
+        val fileName = "image_${System.currentTimeMillis()}.png"
+        val file = File(context.filesDir, fileName)
+
+        FileOutputStream(file).use { outputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        }
+
+        file.absolutePath
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }

@@ -1,24 +1,31 @@
 package com.estudante.ui.screens
 
 import android.content.Context
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,14 +35,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.estudante.database.DatabaseInstance
+import coil.compose.AsyncImage
+import com.estudante.R
 import com.estudante.models.StudentCard
+import com.estudante.repository.StudentCardRepository
 import com.estudante.ui.theme.EstudanteTheme
 
 class HomeScreen {
@@ -48,27 +60,54 @@ class HomeScreen {
             modifier = modifier
                 .fillMaxSize()
         ) {
-            Card(
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(),
-                elevation = CardDefaults.cardElevation(8.dp),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(90.dp)
-                    .clickable { navController.navigate("fatec") }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
-                Text("FATEC")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(126.dp)
+                ) {
+                    // Cabeçalho fixo na parte superior
+                    Text(
+                        text = "e-studante",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        color = Color.DarkGray
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    // Conteúdo que compõe o corpo da página
+                    CardsList(navController, context)
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                ) {
+                    //Menu fixo na parte inferior
+                    Icon(
+                        Icons.Filled.AddCircle,
+                        contentDescription = "Adicionar",
+                        tint = Color.DarkGray,
+                        modifier = modifier
+                            .height(56.dp)
+                            .width(56.dp)
+                            .clickable{ navController.navigate("create_new")}
+                    )
+                }
             }
-            CardsList(navController, context)
-            Icon(
-                Icons.Filled.AddCircle,
-                contentDescription = "Adicionar",
-                modifier = modifier
-                    .height(56.dp)
-                    .width(56.dp)
-                    .clickable{ navController.navigate("create_new")}
-            )
         }
     }
 
@@ -82,20 +121,21 @@ class HomeScreen {
         val scrollState = rememberScrollState()
 
         if (studentCards.isEmpty()) {
-            Text("Carregando carteirinhas...", modifier = Modifier.fillMaxSize())
+            Text("Carregando carteirinhas...", modifier = Modifier.fillMaxWidth())
         } else {
             Column (
                 modifier.verticalScroll(scrollState)
             ) {
                 for (card in studentCards){
-                    StudentCardItem(card, navController, modifier)
+                    StudentCardItem(card, navController, context, modifier)
                 }
             }
         }
     }
 
     @Composable
-    fun StudentCardItem(studentCard:StudentCard, navController: NavController, modifier:Modifier){
+    fun StudentCardItem(studentCard:StudentCard, navController: NavController, context:Context, modifier:Modifier){
+        var expanded by remember { mutableStateOf(false) }
         Card(
             shape = RoundedCornerShape(8.dp),
             colors = CardDefaults.cardColors(),
@@ -104,29 +144,68 @@ class HomeScreen {
                 .fillMaxWidth()
                 .padding(16.dp)
                 .height(90.dp)
-                .clickable { navController.navigate("fatec") }
+                .clickable { navController.navigate("studentCard/" + studentCard.studentId) }
         ) {
-            Text(studentCard.studentName)
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier
+                    .fillMaxWidth()
+            ){
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ){
+                    AsyncImage(
+                        model = studentCard.primaryLogo ?: R.drawable.ic_launcher_background,
+                        contentDescription = "primary logo",
+                        alignment = Alignment.Center,
+                        modifier = modifier
+                            .size(60.dp)
+                            .align(Alignment.CenterVertically)
+                            .background(MaterialTheme.colorScheme.surface),
+                        contentScale = ContentScale.Crop
+                    )
+                    Column {
+                        Text(text = studentCard.studentName)
+                        Text(text = studentCard.year)
+                    }
+
+                    IconButton(
+                        onClick = { expanded = !expanded },
+                    ){
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+
+                            ) {
+                            DropdownMenuItem(
+                                text = { Text("Delete") },
+                                onClick = {
+                                    val repository = StudentCardRepository(context)
+                                    repository.deleteStudentCardById(studentCard.studentId, context)
+                                    navController.navigate("home")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Option 2") },
+                                onClick = { /* Do something... */ }
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 
 
-    suspend fun loadCards(navController:NavController, context: Context): List<StudentCard> {
-        val dao = DatabaseInstance.getDatabase(context).studentCardDao()
-        val allEntitiesFromDatabase = dao.getAllStudentCards()
-        val allCards = mutableListOf<StudentCard>()
-        for (entity in allEntitiesFromDatabase){
-            val newCard = StudentCard()
-            newCard.studentName = entity.studentName
-            newCard.studentCourse = entity.studentCourse
-            newCard.studentCicle = entity.studentCicle
-            newCard.studentId = entity.studentId
-            newCard.primaryLogo = entity.primaryLogoUri?.toUri()
-            newCard.secondaryLogo = entity.secondaryLogoUri?.toUri()
-            newCard.profileImage = entity.profileImageUri?.toUri()
-            allCards.add(newCard)
-        }
-        return allCards
+    fun loadCards(navController:NavController, context: Context): List<StudentCard> {
+        val repository = StudentCardRepository(context)
+        val allEntitiesFromDatabase = repository.getAllStudentCards()
+        return allEntitiesFromDatabase
     }
 
 }

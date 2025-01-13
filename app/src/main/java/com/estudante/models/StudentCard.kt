@@ -1,16 +1,13 @@
 package com.estudante.models
 
-import android.net.Uri
-
-class StudentCard {
-    var primaryLogo: Uri? = null
-    var secondaryLogo: Uri? = null
-    var profileImage: Uri? = null
-
-    var studentName: String = ""
-    var studentId: Long = 0
-    var studentCourse: String = ""
-    var studentCicle: String = ""
-    var year: String = ""
-
-}
+class StudentCard(
+    var cardId: Int = 0,
+    var studentName: String = "",
+    var studentCourse: String = "",
+    var studentCicle: String = "",
+    var year: String = "",
+    var studentId: String = "",
+    var primaryLogo: String? = null,
+    var secondaryLogo: String? = null,
+    var profileImage: String? = null
+)
