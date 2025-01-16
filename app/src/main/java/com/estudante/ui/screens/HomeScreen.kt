@@ -168,7 +168,11 @@ class HomeScreen {
                             .background(MaterialTheme.colorScheme.surface),
                         contentScale = ContentScale.Crop
                     )
-                    Column {
+                    Column (
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier
+                            .padding(8.dp)
+                    ) {
                         Text(text = studentCard.studentName)
                         Text(text = studentCard.year)
                     }
@@ -183,7 +187,7 @@ class HomeScreen {
 
                             ) {
                             DropdownMenuItem(
-                                text = { Text("Delete") },
+                                text = { Text("Deletar") },
                                 onClick = {
                                     val repository = StudentCardRepository(context)
                                     repository.deleteStudentCardById(studentCard.studentId, context)
@@ -191,8 +195,10 @@ class HomeScreen {
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Option 2") },
-                                onClick = { /* Do something... */ }
+                                text = { Text("Editar") },
+                                onClick = {
+                                    navController.navigate("edit_card/" + studentCard.studentId)
+                                }
                             )
                         }
                     }

@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.estudante.models.StudentCard
 import com.estudante.repository.StudentCardRepository
 import com.estudante.ui.screens.CreateNewScreen
+import com.estudante.ui.screens.EditCardScreen
 import com.estudante.ui.screens.HomeScreen
 import com.estudante.ui.screens.StudentCardScreen
 
@@ -29,14 +30,19 @@ class NavGraph {
             ) { backStackEntry ->
                 val context = LocalContext.current
                 val cardId = backStackEntry.arguments?.getLong("studentId") ?:0L
-
                 val repository = StudentCardRepository(context)
                 val studentCard = repository.loadStudentCardFromId(cardId)
                 StudentCardScreen().BuildScreen(navController = navController, studentCard = studentCard ?: StudentCard())
-
             }
-            composable("fatec"){
-                //FatecCardScreen().BuildScreen(navController = navController)
+            composable(
+                route = "edit_card/{studentId}",
+                arguments = listOf(navArgument("studentId") { type = NavType.LongType })
+            ){backStackEntry ->
+                val context = LocalContext.current
+                val cardId = backStackEntry.arguments?.getLong("studentId") ?:0L
+                val repository = StudentCardRepository(context)
+                val studentCard = repository.loadStudentCardFromId(cardId)
+                EditCardScreen(studentCard = studentCard ?: StudentCard()).BuildScreen(navController = navController)
             }
             composable("create_new"){
                 val context = LocalContext.current

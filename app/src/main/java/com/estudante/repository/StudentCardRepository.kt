@@ -25,6 +25,29 @@ class StudentCardRepository(context: Context) {
         db.insert("student_cards", null, values)
     }
 
+    fun updateStudentCardById(card: StudentCard): Boolean{
+        val contentValues = ContentValues().apply {
+            put("studentName", card.studentName)
+            put("studentCourse", card.studentCourse)
+            put("studentCicle", card.studentCicle)
+            put("studentId", card.studentId)
+            put("year", card.year)
+            put("primaryLogo", card.primaryLogo)
+            put("secondaryLogo", card.secondaryLogo)
+            put("profileImage", card.profileImage)
+        }
+
+        // Atualiza o registro correspondente ao ID fornecido
+        val rowsAffected = db.update(
+            "student_cards",     // Nome da tabela
+            contentValues,       // Valores a serem atualizados
+            "studentId = ?",            // Condição para identificar o registro
+            arrayOf(card.studentId) // Argumento para a condição
+        )
+
+        return rowsAffected > 0 // Retorna true se alguma linha foi atualizada
+    }
+
     fun loadStudentCardFromId(studentId: Long): StudentCard? {
         val cursor = db.query(
             "student_cards",

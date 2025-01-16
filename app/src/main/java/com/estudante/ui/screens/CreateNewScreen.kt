@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -314,7 +315,7 @@ fun StudentCardEditor(studentCard: StudentCard, navController:NavController, con
                 },
             ) {
                 Icon(
-                    Icons.Filled.Done,
+                    Icons.Filled.Add,
                     contentDescription = ""
                 )
                 Spacer(modifier = modifier.width(4.dp))
