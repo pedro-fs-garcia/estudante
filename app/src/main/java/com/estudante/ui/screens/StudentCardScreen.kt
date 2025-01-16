@@ -1,14 +1,6 @@
 package com.estudante.ui.screens
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.net.Uri
-import android.provider.MediaStore
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -26,29 +17,21 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.estudante.R
 import com.estudante.models.StudentCard
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 
-class StudentCardScreen () {
+class StudentCardScreen {
 
     @Composable
     fun BuildScreen(navController:NavController, studentCard:StudentCard, modifier: Modifier = Modifier){
@@ -69,9 +52,8 @@ class StudentCardScreen () {
                     .padding(4.dp)
             ){
 
-                val painter = rememberAsyncImagePainter(studentCard.primaryLogo?.let { File(it) })
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = studentCard.primaryLogo ?: R.drawable.ic_launcher_background,
                     contentDescription = "primary logo",
                     modifier = modifier
                         .height(128.dp)
@@ -95,7 +77,7 @@ class StudentCardScreen () {
                         .padding(4.dp)
                 ) {
                     AsyncImage(
-                        model = studentCard.profileImage,
+                        model = studentCard.profileImage ?: R.drawable.ic_launcher_background,
                         contentDescription = "profile picture",
                         modifier = modifier
                             .size(200.dp)

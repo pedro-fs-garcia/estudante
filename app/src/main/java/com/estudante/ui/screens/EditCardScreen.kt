@@ -6,10 +6,8 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +28,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -39,8 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,8 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
 import com.estudante.R
 import com.estudante.models.StudentCard
 import com.estudante.repository.StudentCardRepository
@@ -71,14 +64,14 @@ import java.io.IOException
 class EditCardScreen (studentCard: StudentCard) {
 
     var studentCard = studentCard
-    var primaryLogoUri by mutableStateOf(studentCard.primaryLogo)
-    var secondaryLogoUri by mutableStateOf(studentCard.secondaryLogo)
-    var profileImageUri by mutableStateOf(studentCard.profileImage)
-    var studentNameField by mutableStateOf(studentCard.studentName)
-    var studentIdField by mutableStateOf(studentCard.studentId)
-    var studentCourseField by mutableStateOf(studentCard.studentCourse)
-    var studentCicleField by mutableStateOf(studentCard.studentCicle)
-    var yearField by mutableStateOf(studentCard.year)
+    private var primaryLogoUri by mutableStateOf(studentCard.primaryLogo)
+    private var secondaryLogoUri by mutableStateOf(studentCard.secondaryLogo)
+    private var profileImageUri by mutableStateOf(studentCard.profileImage)
+    private var studentNameField by mutableStateOf(studentCard.studentName)
+    private var studentIdField by mutableStateOf(studentCard.studentId)
+    private var studentCourseField by mutableStateOf(studentCard.studentCourse)
+    private var studentCicleField by mutableStateOf(studentCard.studentCicle)
+    private var yearField by mutableStateOf(studentCard.year)
 
     @Composable
     fun BuildScreen(navController: NavController, modifier:Modifier = Modifier){
@@ -163,7 +156,6 @@ class EditCardScreen (studentCard: StudentCard) {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun InfoCard(context: Context, modifier: Modifier = Modifier){
         Card (
